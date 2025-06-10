@@ -144,7 +144,7 @@ export default function Dashboard() {
             </div>
             <ul className="nav flex-column fw-semibold fade-in">
               <li className="nav-item mb-3">
-                <Link to="/" className="nav-link d-flex align-items-center text-dark" style={{ fontSize: "12px" }}>
+                <Link to="/account" className="nav-link d-flex align-items-center text-dark" style={{ fontSize: "12px" }}>
                   <LayoutDashboard color="#3e7bfa" size={18} className="me-2" /> Dashboard
                 </Link>
               </li>
