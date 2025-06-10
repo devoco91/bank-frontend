@@ -163,7 +163,7 @@ export default function Dashboard() {
               </button>
               <ul className="dropdown-menu dropdown-menu-end">
                 <li><a className="dropdown-item" href="/profile">Profile</a></li>
-                <li><a className="dropdown-item" href="#">Settings</a></li>
+                <li><a className="dropdown-item" href="/settings">Settings</a></li>
                 <li><hr className="dropdown-divider" /></li>
                 <li><button className="dropdown-item" onClick={logout}>Logout</button></li>
               </ul>
