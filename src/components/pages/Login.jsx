@@ -1,5 +1,5 @@
 // src/pages/Login.jsx
-import React, { useState,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { CreditCard, KeyRound, X } from "lucide-react";
@@ -39,31 +39,26 @@ export default function Login() {
 
   const closeModal = () => setError("");
 
-   useEffect(()=>{
-      window.scrollTo(0,0)
-    })
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
-    <>
-      <div
-        style={{
-          backgroundImage: `url(${backgroundImg})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundColor: "#000",
-          minHeight: "100vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          color: "#fff"
-        }}
-      >
-        <div
-          className="bg-white p-4 rounded shadow-sm text-dark"
-          style={{ width: "100%", maxWidth: "350px", minHeight: "360px" }}
-        >
+    <div
+      className="min-vh-100 position-relative"
+      style={{
+        backgroundImage: `url(${backgroundImg})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundColor: "#000"
+      }}
+    >
+      <div className="position-absolute top-0 start-0 w-100 h-100" style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}></div>
+
+      <div className="d-flex justify-content-center align-items-center h-100 w-100 position-relative" style={{ zIndex: 1, padding: "1rem" }}>
+        <div className="bg-white p-4 rounded shadow-sm text-dark w-100" style={{ maxWidth: "400px" }}>
           <h4 className="text-center fw-bold mb-2">Welcome Guest!</h4>
-          <p className="text-center text-muted small mb-3">sign in with your credentials</p>
+          <p className="text-center text-muted small mb-3">Sign in with your credentials</p>
 
           <div className="mb-2 d-flex align-items-center bg-light rounded px-2 py-1">
             <CreditCard className="me-2 text-muted" size={16} />
@@ -102,7 +97,7 @@ export default function Login() {
             {loading ? "Signing in..." : "Sign in"}
           </button>
 
-          <div className="d-flex justify-content-between mt-4 px-1 small">
+          <div className="d-flex flex-column flex-sm-row justify-content-between mt-4 px-1 small gap-2">
             <button className="btn btn-link btn-sm p-0 text-decoration-none" onClick={() => navigate("/settings")}>Forgot password?</button>
             <button className="btn btn-link btn-sm p-0 text-decoration-none" onClick={() => navigate("/dashboard")}>Create new account</button>
           </div>
@@ -125,6 +120,6 @@ export default function Login() {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

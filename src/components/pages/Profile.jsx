@@ -22,7 +22,7 @@ const ProfilePage = () => {
                   className="rounded-circle border border-3"
                   style={{ width: 120, height: 120, objectFit: 'cover' }}
                 />
-                <h4 className="mt-3 text-primary">Williams Chand</h4>
+                <h4 className="mt-3 text-primary">Williams Chandler</h4>
                 <p className="text-muted mb-0">Checking Account</p>
               </div>
               <hr />
@@ -40,7 +40,7 @@ const ProfilePage = () => {
                 <div className="d-flex align-items-center">
                   <FaCalendarAlt className="me-3 text-secondary" />
                   <strong>Date of Birth:</strong>
-                  <span className="ms-auto text-muted">23-08-1991</span>
+                  <span className="ms-auto text-muted">23-08-1970</span>
                 </div>
                 <div className="d-flex align-items-center">
                   <FaRegClock className="me-3 text-secondary" />
