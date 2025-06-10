@@ -133,7 +133,7 @@ export default function Dashboard() {
           <>
             <div className="text-center mb-4">
               <img
-                src={PROFILE}
+                src=""
                 alt="Profile"
                 className="rounded-circle border"
                 width="70"
@@ -192,7 +192,7 @@ export default function Dashboard() {
                   {user?.username || "User"}
                 </span>
                 <img
-                  src={PROFILE}
+                  src=""
                   className="rounded-circle border profile-img"
                   width="40"
                   height="40"
