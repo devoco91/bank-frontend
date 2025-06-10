@@ -1,0 +1,25 @@
+.footer-bg {
+  background-color: #0c1156; /* Deep blue as in screenshot */
+}
+.footer-link {
+  color: #ccc;
+  text-decoration: none;
+}
+.footer-link:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+
+
+.footer-bg {
+  background-color: #0c1156;
+}
+.footer-link, .footer-bg p, .footer-bg li {
+  color: #c4c4c4;
+  text-decoration: none;
+}
+.footer-link:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}

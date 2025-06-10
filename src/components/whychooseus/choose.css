@@ -1,0 +1,12 @@
+.why-choose-us {
+  background-color: #ffffff;
+}
+
+.feature-card {
+  width: 100%;
+  /* max-width: 300px; */
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}

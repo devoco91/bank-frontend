@@ -1,0 +1,130 @@
+// src/pages/Login.jsx
+import React, { useState,useEffect} from "react";
+import { useNavigate } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { CreditCard, KeyRound, X } from "lucide-react";
+import backgroundImg from "../../assets/sky.jpeg";
+
+const API = 'https://backend-dry-glade-5837.fly.dev';
+
+export default function Login() {
+  const [accountNo, setAccountNo] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const handleLogin = async () => {
+    if (!accountNo || !password) return setError("Please fill in all fields");
+    try {
+      setLoading(true);
+      const res = await fetch(`${API}/auth/signin`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ accountNo, password })
+      });
+      const data = await res.json();
+      if (res.ok && data.token) {
+        localStorage.setItem("token", data.token);
+        navigate("/account");
+      } else {
+        setError(data.error || "Login failed");
+      }
+    } catch (err) {
+      setError("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const closeModal = () => setError("");
+
+   useEffect(()=>{
+      window.scrollTo(0,0)
+    })
+
+  return (
+    <>
+      <div
+        style={{
+          backgroundImage: `url(${backgroundImg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundColor: "#000",
+          minHeight: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          color: "#fff"
+        }}
+      >
+        <div
+          className="bg-white p-4 rounded shadow-sm text-dark"
+          style={{ width: "100%", maxWidth: "350px", minHeight: "360px" }}
+        >
+          <h4 className="text-center fw-bold mb-2">Welcome Guest!</h4>
+          <p className="text-center text-muted small mb-3">sign in with your credentials</p>
+
+          <div className="mb-2 d-flex align-items-center bg-light rounded px-2 py-1">
+            <CreditCard className="me-2 text-muted" size={16} />
+            <input
+              type="text"
+              className="form-control form-control-sm border-0 bg-transparent"
+              placeholder="Account No"
+              value={accountNo}
+              onChange={e => setAccountNo(e.target.value)}
+            />
+          </div>
+
+          <div className="mb-2 d-flex align-items-center bg-light rounded px-2 py-1">
+            <KeyRound className="me-2 text-muted" size={16} />
+            <input
+              type="password"
+              className="form-control form-control-sm border-0 bg-transparent"
+              placeholder="Password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+            />
+          </div>
+
+          <div className="form-check my-3">
+            <input type="checkbox" className="form-check-input" id="rememberMe" />
+            <label className="form-check-label" htmlFor="rememberMe">
+              Remember me
+            </label>
+          </div>
+
+          <button
+            className="btn btn-sm btn-primary w-100 shadow-sm"
+            onClick={handleLogin}
+            disabled={loading}
+          >
+            {loading ? "Signing in..." : "Sign in"}
+          </button>
+
+          <div className="d-flex justify-content-between mt-4 px-1 small">
+            <button className="btn btn-link btn-sm p-0 text-decoration-none" onClick={() => navigate("/settings")}>Forgot password?</button>
+            <button className="btn btn-link btn-sm p-0 text-decoration-none" onClick={() => navigate("/dashboard")}>Create new account</button>
+          </div>
+        </div>
+      </div>
+
+      {error && (
+        <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: "rgba(0,0,0,0.6)" }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content text-center">
+              <div className="modal-body py-5">
+                <div className="mb-3">
+                  <X size={48} color="#dc3545" />
+                </div>
+                <h5 className="mb-3">Something Went Wrong</h5>
+                <p className="text-muted">{error}</p>
+                <button className="btn btn-outline-primary" onClick={closeModal}>OK</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
