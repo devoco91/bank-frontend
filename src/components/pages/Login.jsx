@@ -14,29 +14,32 @@ export default function Login() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
-    if (!accountNo || !password) return setError("Please fill in all fields");
-    try {
-      setLoading(true);
-     const res = await fetch(`${API}/auth/signin`, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  credentials: "include", // ✅ crucial for CORS cookies/tokens
-  body: JSON.stringify({ accountNo, password })
-});
-      const data = await res.json();
-      if (res.ok && data.token) {
-        localStorage.setItem("token", data.token);
-        navigate("/account");
-      } else {
-        setError(data.error || "Login failed");
-      }
-    } catch (err) {
-      setError("Something went wrong");
-    } finally {
-      setLoading(false);
+ const handleLogin = async () => {
+  if (!accountNo || !password) return setError("Please fill in all fields");
+
+  try {
+    setLoading(true);
+    const res = await fetch(`${API}/auth/signin`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include", // ✅ Keep this for cookies
+      body: JSON.stringify({ accountNo, password }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      navigate("/account");
+    } else {
+      setError(data.error || "Login failed");
     }
-  };
+  } catch (err) {
+    setError("Something went wrong");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const closeModal = () => setError("");
 

@@ -34,25 +34,25 @@ export default function Dashboard() {
   const authHeaders = { Authorization: `Bearer ${token}` };
 
   const fetchDashboard = async () => {
-    if (!token) return navigate("/login");
-    try {
-      setLoading(true);
-     const res = await fetch(`${API}/user/dashboard`, {
-  method: "GET",
-  headers: authHeaders,
-  credentials: "include" // ✅ ensures cross-domain cookies or sessions work
-});
-      if (!res.ok) return navigate("/login");
-      const data = await res.json();
-      setUser(data);
-      setTransactions((data.transactions || []).slice(0, 10));
-    } catch (error) {
-      console.error("Error fetching dashboard data:", error);
-      navigate("/login");
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    setLoading(true);
+    const res = await fetch(`${API}/user/dashboard`, {
+      method: "GET",
+      credentials: "include",  // cookies sent automatically
+      // headers: {} // no Authorization header needed
+    });
+    if (!res.ok) return navigate("/login");
+    const data = await res.json();
+    setUser(data);
+    setTransactions((data.transactions || []).slice(0, 10));
+  } catch (error) {
+    console.error("Error fetching dashboard data:", error);
+    navigate("/login");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     const handleResize = () => {

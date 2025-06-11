@@ -11,29 +11,31 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const login = async () => {
-    if (!accountNo || !password) return alert("Please fill in all fields");
-    try {
-      setLoading(true);
+ const login = async () => {
+  if (!accountNo || !password) return alert("Please fill in all fields");
+  try {
+    setLoading(true);
     const res = await fetch(`${API}/auth/signin`, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  credentials: "include", // ✅ crucial for CORS cookies/tokens
-  body: JSON.stringify({ accountNo, password })
-});
-      const data = await res.json();
-      if (res.ok && data.token) {
-        localStorage.setItem('token', data.token);
-        navigate('/dashboard');
-      } else {
-        alert(data.error || 'Login failed');
-      }
-    } catch (err) {
-      alert('Network error');
-    } finally {
-      setLoading(false);
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include", // ✅ needed for cross-origin cookies
+      body: JSON.stringify({ accountNo, password }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      navigate('/dashboard'); // ✅ just redirect, cookie is already set
+    } else {
+      alert(data.error || 'Login failed');
     }
-  };
+  } catch (err) {
+    alert('Network error');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
    useEffect(()=>{
       window.scrollTo(0,0)
