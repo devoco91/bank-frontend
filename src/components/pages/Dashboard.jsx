@@ -37,7 +37,11 @@ export default function Dashboard() {
     if (!token) return navigate("/login");
     try {
       setLoading(true);
-      const res = await fetch(`${API}/user/dashboard`, { headers: authHeaders });
+     const res = await fetch(`${API}/user/dashboard`, {
+  method: "GET",
+  headers: authHeaders,
+  credentials: "include" // ✅ ensures cross-domain cookies or sessions work
+});
       if (!res.ok) return navigate("/login");
       const data = await res.json();
       setUser(data);

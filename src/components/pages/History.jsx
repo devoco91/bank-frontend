@@ -12,7 +12,10 @@ export default function HistoryPage() {
 
   const fetchTransactions = async () => {
     try {
-      const res = await fetch(`${API}/transactions`, { headers: authHeaders });
+    const res = await fetch(`${API}/transactions`, {
+  headers: authHeaders,
+  credentials: "include" // ✅ Required for cookies/session on custom domains
+});
       const data = await res.json();
       setTransactions(data);
     } catch (err) {

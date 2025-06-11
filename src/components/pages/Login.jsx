@@ -18,11 +18,12 @@ export default function Login() {
     if (!accountNo || !password) return setError("Please fill in all fields");
     try {
       setLoading(true);
-      const res = await fetch(`${API}/auth/signin`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ accountNo, password })
-      });
+     const res = await fetch(`${API}/auth/signin`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  credentials: "include", // ✅ crucial for CORS cookies/tokens
+  body: JSON.stringify({ accountNo, password })
+});
       const data = await res.json();
       if (res.ok && data.token) {
         localStorage.setItem("token", data.token);

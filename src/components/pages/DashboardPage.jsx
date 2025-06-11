@@ -27,7 +27,10 @@ export default function DashboardPage() {
   const fetchDashboard = async () => {
     if (!token) return logout();
     try {
-      const res = await fetch(`${API}/user/dashboard`, { headers: authHeaders });
+      const res = await fetch(`${API}/user/dashboard`, {
+  headers: authHeaders,
+  credentials: "include"
+});
       if (res.status === 401 || res.status === 403) return logout();
       const data = await res.json();
       setUser(data);
