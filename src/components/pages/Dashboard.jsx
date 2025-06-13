@@ -29,35 +29,41 @@ export default function Dashboard() {
   const [transactions, setTransactions] = useState([]);
 
   const navigate = useNavigate();
-
   const token = localStorage.getItem("token");
-  const authHeaders = { Authorization: `Bearer ${token}` };
 
-  const fetchDashboard = async () => {
+const fetchDashboard = async () => {
   try {
     setLoading(true);
+
     const res = await fetch(`${API}/user/dashboard`, {
       method: "GET",
-      credentials: "include",  // cookies sent automatically
-      // headers: {} // no Authorization header needed
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+      credentials: "include",
     });
-    if (!res.ok) return navigate("/login");
+
     const data = await res.json();
+
+    if (res.status === 401 || !data.success) {
+      localStorage.removeItem("token");
+      return navigate("/login");
+    }
+
     setUser(data);
     setTransactions((data.transactions || []).slice(0, 10));
   } catch (error) {
     console.error("Error fetching dashboard data:", error);
+    localStorage.removeItem("token");
     navigate("/login");
   } finally {
     setLoading(false);
   }
 };
 
-
   useEffect(() => {
-    const handleResize = () => {
-      setSidebarOpen(window.innerWidth >= 768);
-    };
+    const handleResize = () => setSidebarOpen(window.innerWidth >= 768);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -90,25 +96,25 @@ export default function Dashboard() {
   const stats = [
     {
       label: "ACCOUNT BALANCE",
-      value: `$${user?.totalAmount?.toLocaleString()}`,
+      value: `$${user?.totalAmount?.toLocaleString() || "0.00"}`,
       icon: <DollarSign size={18} color="white" />,
       bg: "#EA5455",
     },
     {
       label: "ACCOUNT TYPE",
-      value: user?.accountType,
+      value: user?.accountType || "N/A",
       icon: <MonitorSmartphone size={18} color="white" />,
       bg: "#FF9F43",
     },
     {
       label: "TOTAL TRANSACTIONS",
-      value: user?.totalTransactions,
+      value: user?.totalTransactions ?? 0,
       icon: <RotateCcw size={18} color="white" />,
       bg: "#28C76F",
     },
     {
       label: "ACCOUNT NO.",
-      value: user?.accountNumber,
+      value: user?.accountNumber || "N/A",
       icon: <CreditCard size={18} color="white" />,
       bg: "#7367F0",
     },
@@ -116,6 +122,7 @@ export default function Dashboard() {
 
   return (
     <div className="d-flex flex-column flex-md-row" style={{ minHeight: "100vh", backgroundColor: "#f5f7fb" }}>
+      {/* Sidebar */}
       <div
         className="bg-white border-end sidebar position-relative z-1"
         style={{
@@ -137,14 +144,14 @@ export default function Dashboard() {
           <>
             <div className="text-center mb-4">
               <img
-                src=""
+                src={PROFILE}
                 alt="Profile"
                 className="rounded-circle border"
                 width="70"
                 height="70"
                 style={{ objectFit: "cover" }}
               />
-              <div className="mt-2 small text-muted">{user?.username}</div>
+              <div className="mt-2 small text-muted">{user?.username || "User"}</div>
             </div>
             <ul className="nav flex-column fw-semibold fade-in">
               <li className="nav-item mb-3">
@@ -172,7 +179,9 @@ export default function Dashboard() {
         )}
       </div>
 
+      {/* Main Content */}
       <div className="flex-grow-1 position-relative z-0 d-flex flex-column">
+        {/* Header */}
         <div className="p-3 p-md-4" style={{ backgroundColor: "#3e7bfa", color: "white" }}>
           <div className="d-flex justify-content-between align-items-center gap-2 mb-2 flex-wrap">
             <button
@@ -196,7 +205,7 @@ export default function Dashboard() {
                   {user?.username || "User"}
                 </span>
                 <img
-                  src=""
+                  src={PROFILE}
                   className="rounded-circle border profile-img"
                   width="40"
                   height="40"
@@ -213,6 +222,7 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* Stats Cards */}
         <div className="row g-3 g-md-4 p-3 p-md-4" style={{ backgroundColor: "#f0f4ff", color: "#333" }}>
           {loading ? (
             Array(4).fill(null).map((_, idx) => (
@@ -236,7 +246,7 @@ export default function Dashboard() {
                     <div className="rounded-circle d-flex align-items-center justify-content-center mb-1" style={{ backgroundColor: item.bg, width: 35, height: 35 }}>
                       {item.icon}
                     </div>
-                    <p className="text-muted small mb-1" style={{fontSize:'12px'}}>{item.label}</p>
+                    <p className="text-muted small mb-1" style={{ fontSize: '12px' }}>{item.label}</p>
                     <h6 className="text-dark stat-value mb-0">{item.value}</h6>
                   </div>
                 </div>
@@ -245,19 +255,20 @@ export default function Dashboard() {
           )}
         </div>
 
+        {/* Transaction History */}
         <div className="px-2 px-md-4 pb-4">
           <h6 className="mb-3 fw-semibold">Last 10 Transaction History</h6>
           <div className="table-responsive">
             <table className="table table-bordered bg-white">
               <thead className="table-head">
                 <tr>
-                  <th style={{backgroundColor:'#d3d3d3',fontSize:'9px'}}>#</th>
-                  <th style={{backgroundColor:'#d3d3d3',fontSize:'9px'}}>REFERENCE</th>
-                  <th style={{backgroundColor:'#d3d3d3',fontSize:'9px'}}>AMOUNT</th>
-                  <th style={{backgroundColor:'#d3d3d3',fontSize:'9px'}}>TYPE</th>
-                  <th style={{backgroundColor:'#d3d3d3',fontSize:'9px'}}>DESC</th>
-                  <th style={{backgroundColor:'#d3d3d3',fontSize:'9px'}}>DATE</th>
-                  <th style={{backgroundColor:'#d3d3d3',fontSize:'9px'}}>STATUS</th>
+                  <th style={{ backgroundColor: '#d3d3d3', fontSize: '9px' }}>#</th>
+                  <th style={{ backgroundColor: '#d3d3d3', fontSize: '9px' }}>REFERENCE</th>
+                  <th style={{ backgroundColor: '#d3d3d3', fontSize: '9px' }}>AMOUNT</th>
+                  <th style={{ backgroundColor: '#d3d3d3', fontSize: '9px' }}>TYPE</th>
+                  <th style={{ backgroundColor: '#d3d3d3', fontSize: '9px' }}>DESC</th>
+                  <th style={{ backgroundColor: '#d3d3d3', fontSize: '9px' }}>DATE</th>
+                  <th style={{ backgroundColor: '#d3d3d3', fontSize: '9px' }}>STATUS</th>
                 </tr>
               </thead>
               <tbody>
@@ -267,7 +278,11 @@ export default function Dashboard() {
                       <td>{index + 1}</td>
                       <td>{txn.reference}</td>
                       <td>${txn.amount}</td>
-                      <td><span className={`badge ${txn.type === 'credit' ? 'bg-success' : 'bg-danger'}`}>{txn.type}</span></td>
+                      <td>
+                        <span className={`badge ${txn.type === "credit" ? "bg-success" : "bg-danger"}`}>
+                          {txn.type}
+                        </span>
+                      </td>
                       <td>{txn.description}</td>
                       <td>{new Date(txn.date).toLocaleString()}</td>
                       <td><span className="badge bg-success">{txn.status}</span></td>
@@ -283,17 +298,18 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* Footer Nav */}
         <div className="d-flex flex-wrap justify-content-around border-top p-3 bg-white w-100">
-          <Link to="/" className="btn text-center flex-fill" style={{ fontSize:'12px'}}>
+          <Link to="/" className="btn text-center flex-fill" style={{ fontSize: '12px' }}>
             <Home size={20} color="#3e7bfa" /> <br className="d-none d-sm-block" /> Home
           </Link>
-          <Link to="/investment" className="btn text-center flex-fill" style={{ fontSize:'12px'}}>
+          <Link to="/investment" className="btn text-center flex-fill" style={{ fontSize: '12px' }}>
             <TrendingUp size={20} color="#28c76f" /> <br className="d-none d-sm-block" /> Investment
           </Link>
-          <Link to="/send" className="btn text-center flex-fill" style={{ fontSize:'12px'}}>
+          <Link to="/send" className="btn text-center flex-fill" style={{ fontSize: '12px' }}>
             <Send size={20} color="#ff9f43" /> <br className="d-none d-sm-block" /> Send
           </Link>
-          <Link to="/card" className="btn text-center flex-fill" style={{ fontSize:'12px'}}>
+          <Link to="/card" className="btn text-center flex-fill" style={{ fontSize: '12px' }}>
             <CreditCard size={20} color="#7367f0" /> <br className="d-none d-sm-block" /> Card
           </Link>
         </div>

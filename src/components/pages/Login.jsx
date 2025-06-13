@@ -14,7 +14,7 @@ export default function Login() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
- const handleLogin = async () => {
+const handleLogin = async () => {
   if (!accountNo || !password) return setError("Please fill in all fields");
 
   try {
@@ -22,19 +22,23 @@ export default function Login() {
     const res = await fetch(`${API}/auth/signin`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      credentials: "include", // ✅ Keep this for cookies
+      credentials: "include",
       body: JSON.stringify({ accountNo, password }),
     });
 
     const data = await res.json();
+    console.log("Login response:", data);  // <-- Added this line to inspect response
 
-    if (res.ok && data.success) {
-      navigate("/account");
+    if (res.ok && data.token) {
+      localStorage.setItem("token", data.token);
+      navigate("/dashboard");
     } else {
-      setError(data.error || "Login failed");
+      setError(data.error || "Invalid credentials");
     }
   } catch (err) {
-    setError("Something went wrong");
+    const msg = err?.message || "Something went wrong";
+    setError(msg);
+    console.error("Login error:", err);
   } finally {
     setLoading(false);
   }
@@ -88,9 +92,7 @@ export default function Login() {
 
           <div className="form-check my-3">
             <input type="checkbox" className="form-check-input" id="rememberMe" />
-            <label className="form-check-label" htmlFor="rememberMe">
-              Remember me
-            </label>
+            <label className="form-check-label" htmlFor="rememberMe">Remember me</label>
           </div>
 
           <button

@@ -13,47 +13,49 @@ export default function DashboardPage() {
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  const token = localStorage.getItem('token');
-  const authHeaders = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
+  const authHeaders = { 'Content-Type': 'application/json' };
 
   useEffect(() => {
     fetchDashboard();
-  }, [token]);
+  }, []);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  const logout = () => {
-    localStorage.removeItem('token');
+  const logout = async () => {
+    await fetch(`${API}/auth/signout`, {
+      method: 'POST',
+      credentials: 'include',
+    });
     navigate('/auth');
   };
 
-  const fetchDashboard = async () => {
-    if (!token) {
-      logout();
-      return;
+const fetchDashboard = async () => {
+  setLoading(true);
+  try {
+    const res = await fetch(`${API}/user/dashboard`, {
+      headers: authHeaders,
+      credentials: "include",
+    });
+
+    if (res.status === 401 || res.status === 403) {
+      localStorage.removeItem("token");
+      return logout();
     }
-    setLoading(true);
-    try {
-      const res = await fetch(`${API}/user/dashboard`, {
-        headers: authHeaders,
-        credentials: 'include',
-      });
-      if (res.status === 401 || res.status === 403) {
-        logout();
-        return;
-      }
-      const data = await res.json();
-      setUser(data);
-      setTransactions(Array.isArray(data.transactions) ? data.transactions : []);
-    } catch (e) {
-      console.error('Dashboard fetch failed', e);
-      logout();
-    } finally {
-      setLoading(false);
-    }
-  };
+
+    const data = await res.json();
+    setUser(data);
+    setTransactions(Array.isArray(data.transactions) ? data.transactions.slice(0, 10) : []);
+  } catch (e) {
+    console.error("Dashboard fetch failed", e);
+    localStorage.removeItem("token");
+    logout();
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const createBalance = async () => {
     const amt = prompt('Enter initial balance:');
@@ -62,6 +64,7 @@ export default function DashboardPage() {
       await fetch(`${API}/user/total-amount`, {
         method: 'POST',
         headers: authHeaders,
+        credentials: 'include',
         body: JSON.stringify({ totalAmount: Number(amt) }),
       });
       fetchDashboard();
@@ -78,6 +81,7 @@ export default function DashboardPage() {
       await fetch(`${API}/user/total-amount`, {
         method: 'PUT',
         headers: authHeaders,
+        credentials: 'include',
         body: JSON.stringify({ totalAmount: Number(amt) }),
       });
       fetchDashboard();
@@ -94,6 +98,7 @@ export default function DashboardPage() {
       await fetch(`${API}/user/total-amount`, {
         method: 'DELETE',
         headers: authHeaders,
+        credentials: 'include',
       });
       fetchDashboard();
     } catch (e) {
@@ -126,18 +131,21 @@ export default function DashboardPage() {
         await fetch(`${API}/transactions/${editId}`, {
           method: 'PUT',
           headers: authHeaders,
+          credentials: 'include',
           body: JSON.stringify({ ...form, amount }),
         });
 
         await fetch(`${API}/user/total-amount`, {
           method: 'PUT',
           headers: authHeaders,
+          credentials: 'include',
           body: JSON.stringify({ totalAmount: user.totalAmount + delta }),
         });
       } else {
         await fetch(`${API}/transactions`, {
           method: 'POST',
           headers: authHeaders,
+          credentials: 'include',
           body: JSON.stringify({ ...form, amount }),
         });
 
@@ -145,6 +153,7 @@ export default function DashboardPage() {
         await fetch(`${API}/user/total-amount`, {
           method: 'PUT',
           headers: authHeaders,
+          credentials: 'include',
           body: JSON.stringify({ totalAmount: user.totalAmount + delta }),
         });
       }
@@ -166,6 +175,7 @@ export default function DashboardPage() {
       await fetch(`${API}/transactions/${id}`, {
         method: 'DELETE',
         headers: authHeaders,
+        credentials: 'include',
       });
       fetchDashboard();
     } catch (e) {
@@ -186,7 +196,6 @@ export default function DashboardPage() {
   };
 
   if (loading) return <div className="container py-5">Loading dashboard...</div>;
-
   if (!user) return <div className="container py-5">No user data available.</div>;
 
   const {
