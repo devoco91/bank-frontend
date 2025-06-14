@@ -3,7 +3,9 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const API = 'http://localhost:3000';
+const API = 'https://backend-dry-glade-5837.fly.dev';
+// const API = 'http://localhost:3000';
+;
 
 export default function LoginPage() {
    const [accountNo, setAccountNo] = useState("");

@@ -5,7 +5,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { CreditCard, KeyRound, X } from "lucide-react";
 import backgroundImg from "../../assets/sky.jpeg";
 
-const API = 'http://localhost:3000';
+const API = 'https://backend-dry-glade-5837.fly.dev';
+// const API = 'http://localhost:3000';
+
 
 export default function Login() {
   const [accountNo, setAccountNo] = useState("");
