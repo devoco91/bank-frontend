@@ -219,7 +219,7 @@ export default function DashboardPage() {
           <div className="card p-3">Account Number: {accountNumber}</div>
         </div>
         <div className="col-md-4">
-          <div className="card p-3">Username: {username}</div>
+          <div className="card p-3">Username: William Chandler</div>
         </div>
         <div className="col-md-6">
           <div className="card p-3">Balance: ${totalAmount?.toLocaleString()}</div>
