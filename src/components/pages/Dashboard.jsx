@@ -111,7 +111,9 @@ export default function Dashboard() {
           </Link>
           
           <br />
+          <Link to='/profile'>
           <img src='' alt="Profile" className="rounded-circle border shadow" width="80" height="80" style={{ objectFit: "cover" }} />
+          </Link>
         </div>
         <ul className="nav flex-column fw-semibold">
           <li className="nav-item mb-3">
@@ -210,18 +212,18 @@ export default function Dashboard() {
         </div>
 
         <div className="px-2 px-md-4 pb-4">
-          <h6 className="mb-3 fw-semibold">Last 10 Transaction History</h6>
+          <h4 className="mb-3 fw-semibold mt-5 ">Last 10 Transaction History</h4>
           <div className="table-responsive">
             <table className="table table-bordered bg-white">
               <thead className="table-head">
                 <tr>
-                  <th>#</th>
-                  <th>REFERENCE</th>
-                  <th>AMOUNT</th>
-                  <th>TYPE</th>
-                  <th>DESC</th>
-                  <th>DATE</th>
-                  <th>STATUS</th>
+                  <th style={{backgroundColor:'#d4d4d4'}}>#</th>
+                  <th style={{backgroundColor:'#d4d4d4'}}>REFERENCE</th>
+                  <th style={{backgroundColor:'#d4d4d4'}}>AMOUNT</th>
+                  <th style={{backgroundColor:'#d4d4d4'}}>TYPE</th>
+                  <th style={{backgroundColor:'#d4d4d4'}}>DESC</th>
+                  <th style={{backgroundColor:'#d4d4d4'}}>DATE</th>
+                  <th style={{backgroundColor:'#d4d4d4'}}>STATUS</th>
                 </tr>
               </thead>
               <tbody>

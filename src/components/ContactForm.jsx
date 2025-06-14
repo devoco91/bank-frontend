@@ -1,14 +1,15 @@
-// File: src/components/ContactForm.jsx
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Container, Row, Col, Form, Button, Modal } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const ContactForm = () => {
   const [showModal, setShowModal] = useState(false);
+  const formRef = useRef(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setShowModal(true);
+    formRef.current.reset(); // Reset form fields
   };
 
   return (
@@ -16,33 +17,33 @@ const ContactForm = () => {
       <Container>
         <div className="text-center mb-4">
           <p className="text-primary fw-bold mb-1" style={{ fontSize: '17px' }}>Contact Us</p>
-          <h5 className="f" style={{ fontSize: '24px' }}>Contact With Us</h5>
+          <h5 style={{ fontSize: '24px' }}>Contact With Us</h5>
         </div>
 
-        <Form className="mx-auto" style={{ maxWidth: '700px' }} onSubmit={handleSubmit}>
+        <Form className="mx-auto" style={{ maxWidth: '700px' }} onSubmit={handleSubmit} ref={formRef}>
           <Row className="mb-3">
             <Col md={6} className="mb-3 mb-md-0">
               <Form.Group>
                 <Form.Label className="text-muted" style={{ fontSize: '17px' }}>Name</Form.Label>
-                <Form.Control type="text" className="border-0 border-bottom border-dark rounded-0 shadow-none" />
+                <Form.Control type="text" required className="border-0 border-bottom border-dark rounded-0 shadow-none" />
               </Form.Group>
             </Col>
             <Col md={6}>
               <Form.Group>
                 <Form.Label className="text-muted" style={{ fontSize: '17px' }}>Email</Form.Label>
-                <Form.Control type="email" className="border-0 border-bottom border-dark rounded-0 shadow-none" />
+                <Form.Control type="email" required className="border-0 border-bottom border-dark rounded-0 shadow-none" />
               </Form.Group>
             </Col>
           </Row>
 
           <Form.Group className="mb-3">
             <Form.Label className="text-muted" style={{ fontSize: '17px' }}>Subject</Form.Label>
-            <Form.Control type="text" className="border-0 border-bottom border-dark rounded-0 shadow-none" />
+            <Form.Control type="text" required className="border-0 border-bottom border-dark rounded-0 shadow-none" />
           </Form.Group>
 
           <Form.Group className="mb-4">
             <Form.Label className="text-muted" style={{ fontSize: '17px' }}>Message</Form.Label>
-            <Form.Control as="textarea" rows={4} className="border-0 border-dark border-bottom rounded-0 shadow-none" />
+            <Form.Control as="textarea" rows={4} required className="border-0 border-dark border-bottom rounded-0 shadow-none" />
           </Form.Group>
 
           <div className="text-center">
@@ -60,9 +61,11 @@ const ContactForm = () => {
           </div>
         </Form>
 
-        <Modal show={showModal} onHide={() => setShowModal(false)} centered>
-          <Modal.Body className="text-center">
-            <h5 className="mb-3">Message Sent Successfully</h5>
+        {/* Modal with fade animation */}
+        <Modal show={showModal} onHide={() => setShowModal(false)} centered className="fade">
+          <Modal.Body className="text-center py-4">
+            <h5 className="mb-3 text-success">Thank you for contacting us.</h5>
+            <p>We will get back to you soonest.</p>
             <Button variant="primary" onClick={() => setShowModal(false)}>OK</Button>
           </Modal.Body>
         </Modal>
