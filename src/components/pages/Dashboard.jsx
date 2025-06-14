@@ -106,7 +106,10 @@ export default function Dashboard() {
           <span className="fs-4">&times;</span>
         </button>
         <div className="text-center mb-4">
+         <Link to='/'>
           <img src={LOGO} alt="Logo" className="img-fluid mb-3" style={{ maxWidth: "100px" }} />
+          </Link>
+          
           <br />
           <img src='' alt="Profile" className="rounded-circle border shadow" width="80" height="80" style={{ objectFit: "cover" }} />
         </div>
