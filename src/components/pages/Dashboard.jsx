@@ -1,3 +1,4 @@
+// src/pages/Dashboard.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import LOGO from "../../assets/logo.png";
@@ -23,16 +24,14 @@ import "./Dashboard.css";
 const API = 'https://backend-dry-glade-5837.fly.dev';
 
 export default function Dashboard() {
-  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 768);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [cardLoading, setCardLoading] = useState(true);
   const [transactions, setTransactions] = useState([]);
   const navigate = useNavigate();
 
   const fetchDashboard = async () => {
     try {
-      setCardLoading(true);
       const res = await fetch(`${API}/user/dashboard`, {
         method: "GET",
         headers: {
@@ -43,11 +42,8 @@ export default function Dashboard() {
       });
 
       const data = await res.json();
-      console.log("Dashboard fetch status:", res.status);
-      console.log("Fetched Dashboard data:", data);
 
       if (!data.accountNo) {
-        console.warn("Auth failed: Redirecting to login");
         localStorage.removeItem("token");
         return navigate("/login");
       }
@@ -55,12 +51,10 @@ export default function Dashboard() {
       setUser(data);
       setTransactions(data.transactions?.slice(0, 10) || []);
     } catch (error) {
-      console.error("Dashboard error:", error);
       localStorage.removeItem("token");
       navigate("/login");
     } finally {
       setLoading(false);
-      setCardLoading(false);
     }
   };
 
@@ -75,12 +69,6 @@ export default function Dashboard() {
     navigate("/login");
   };
 
-  useEffect(() => {
-    const handleResize = () => setSidebarOpen(window.innerWidth >= 768);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
   if (loading) return (
     <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "100vh" }}>
       <div className="spinner-border text-primary" role="status">
@@ -93,54 +81,50 @@ export default function Dashboard() {
 
   return (
     <div className="d-flex flex-column flex-md-row" style={{ minHeight: "100vh", backgroundColor: "#f5f7fb" }}>
-      <div
-        className="bg-white border-end sidebar position-relative z-1"
-        style={{ width: sidebarOpen ? 200 : 60, overflow: "hidden", padding: sidebarOpen ? "20px 10px" : "10px 5px", transition: "all 0.3s ease" }}
-      >
-        <div className="position-relative mb-4 text-center">
-          {sidebarOpen && (
-            <Link to="/">
-              <img src={LOGO} alt="Logo" className="img-fluid" style={{ maxWidth: "120px" }} />
-            </Link>
-          )}
+      {/* Overlay */}
+      {sidebarOpen && (
+        <div className="sidebar-overlay active" onClick={() => setSidebarOpen(false)} />
+      )}
+
+      {/* Slide-in Sidebar */}
+      <div className={`sidebar-container ${sidebarOpen ? 'open' : ''} d-md-block`}>
+        <button className="sidebar-close-btn d-md-none" onClick={() => setSidebarOpen(false)}>
+          <span className="fs-4">&times;</span>
+        </button>
+
+        <div className="text-center mb-4">
+          <img src={LOGO} alt="Logo" className="img-fluid mb-3" style={{ maxWidth: "120px" }} />
+          <img src={PROFILE} alt="Profile" className="rounded-circle border" width="70" height="70" />
         </div>
 
-        {sidebarOpen && (
-          <>
-            <div className="text-center mb-4">
-              <img src='' alt="Profile" className="rounded-circle border" width="70" height="70" style={{ objectFit: "cover" }} />
-              <div className="mt-2 small text-muted"></div>
-            </div>
-            <ul className="nav flex-column fw-semibold fade-in">
-              <li className="nav-item mb-3">
-                <Link to="/account" className="nav-link d-flex align-items-center text-dark" style={{ fontSize: "17px" }}>
-                  <LayoutDashboard color="#3e7bfa" size={18} className="me-2" /> Dashboard
-                </Link>
-              </li>
-              <li className="nav-item mb-3">
-                <Link to="/transfer" className="nav-link d-flex align-items-center text-dark" style={{ fontSize: "17px" }}>
-                  <SendHorizontal color="#28c76f" size={18} className="me-2" /> Transfer
-                </Link>
-              </li>
-              <li className="nav-item mb-3">
-                <Link to="/history" className="nav-link d-flex align-items-center text-dark" style={{ fontSize: "17px" }}>
-                  <History color="#ff9f43" size={18} className="me-2" /> History
-                </Link>
-              </li>
-              <li className="nav-item mb-3">
-                <Link to="/settings" className="nav-link d-flex align-items-center text-dark" style={{ fontSize: "17px" }}>
-                  <Settings color="#7367f0" size={18} className="me-2" /> Settings
-                </Link>
-              </li>
-            </ul>
-          </>
-        )}
+        <ul className="nav flex-column fw-semibold">
+          <li className="nav-item mb-3">
+            <Link to="/account" className="nav-link text-dark d-flex align-items-center" onClick={() => setSidebarOpen(false)}>
+              <LayoutDashboard size={18} className="me-2" /> Dashboard
+            </Link>
+          </li>
+          <li className="nav-item mb-3">
+            <Link to="/transfer" className="nav-link text-dark d-flex align-items-center" onClick={() => setSidebarOpen(false)}>
+              <SendHorizontal size={18} className="me-2" /> Transfer
+            </Link>
+          </li>
+          <li className="nav-item mb-3">
+            <Link to="/history" className="nav-link text-dark d-flex align-items-center" onClick={() => setSidebarOpen(false)}>
+              <History size={18} className="me-2" /> History
+            </Link>
+          </li>
+          <li className="nav-item mb-3">
+            <Link to="/settings" className="nav-link text-dark d-flex align-items-center" onClick={() => setSidebarOpen(false)}>
+              <Settings size={18} className="me-2" /> Settings
+            </Link>
+          </li>
+        </ul>
       </div>
 
       <div className="flex-grow-1 position-relative z-0 d-flex flex-column">
         <div className="p-3 p-md-4" style={{ backgroundColor: "#3e7bfa", color: "white" }}>
           <div className="d-flex justify-content-between align-items-center gap-2 mb-2 flex-wrap">
-            <button className="btn btn-outline-light d-md-none" onClick={() => setSidebarOpen(!sidebarOpen)} title={sidebarOpen ? "Close Sidebar" : "Open Sidebar"}>
+            <button className="btn btn-outline-light d-md-none" onClick={() => setSidebarOpen(true)}>
               <Menu size={20} />
             </button>
 
@@ -149,7 +133,7 @@ export default function Dashboard() {
             <div className="dropdown">
               <button className="btn btn-outline-light dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <span className="me-2 d-none d-sm-inline" style={{ fontFamily: "cursive", fontSize: "17px" }}>Williams Chandler</span>
-                <img src='' className="rounded-circle border profile-img" width="40" height="40" alt="User" />
+                <img src={PROFILE} className="rounded-circle border profile-img" width="40" height="40" alt="User" />
               </button>
               <ul className="dropdown-menu dropdown-menu-end">
                 <li><Link className="dropdown-item" to="/profile">Profile</Link></li>
@@ -192,17 +176,8 @@ export default function Dashboard() {
                   <div className="rounded-circle d-flex align-items-center justify-content-center mb-1" style={{ backgroundColor: item.bg, width: 35, height: 35 }}>
                     {item.icon}
                   </div>
-                  {cardLoading ? (
-                    <>
-                      <p className="placeholder-glow w-75 mb-1"><span className="placeholder col-12"></span></p>
-                      <p className="placeholder-glow w-50"><span className="placeholder col-12"></span></p>
-                    </>
-                  ) : (
-                    <>
-                      <p className="text-muted small mb-1" style={{ fontSize: '17px' }}>{item.label}</p>
-                      <h6 className="text-dark mb-0">{item.value}</h6>
-                    </>
-                  )}
+                  <p className="text-muted small mb-1" style={{ fontSize: '17px' }}>{item.label}</p>
+                  <h6 className="text-dark mb-0">{item.value}</h6>
                 </div>
               </div>
             </div>
