@@ -88,10 +88,24 @@ export default function Dashboard() {
           <span className="fs-4">&times;</span>
         </button>
 
-        <div className="text-center mb-4">
-          <img src={LOGO} alt="Logo" className="img-fluid mb-3" style={{ maxWidth: "120px" }} />
-          <img src='' alt="Profile" className="rounded-circle border" width="70" height="70" />
-        </div>
+<div className="text-center mb-4">
+  <img
+    src={LOGO}
+    alt="Logo"
+    className="img-fluid mb-3"
+    style={{ maxWidth: "100px" }}
+  />
+  <br />
+  <img
+    src=''
+    alt="Profile"
+    className="rounded-circle border shadow"
+    width="80"
+    height="80"
+    style={{ objectFit: "cover" }}
+  />
+</div>
+
 
         <ul className="nav flex-column fw-semibold">
           <li className="nav-item mb-3">
