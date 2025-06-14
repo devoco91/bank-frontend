@@ -13,7 +13,7 @@ const Services = () => {
   })
 
   return (
-    <div style={{marginTop:'80px'}}>
+    <div style={{marginTop:'70px'}}>
         <Navbar/>
         <ServicesHeader/>
         <CoreServices/>

@@ -4,17 +4,17 @@ import "./footer.css";
 
 const Footer = () => {
   return (
-    <footer className="footer-bg pt-5 pb-3">
+    <footer className="footer-bg pt-5 pb-3 defect">
       <div className="container">
         <div className="row gx-4 gy-4">
 
           <div className="col-md-4 col-lg-4 col-xl-4">
-            <h6 className="mb-2 fw-bold text-nowrap text-white small">SKY WAVES FINANCIAL</h6>
+            <h5 className="mb-2 fw-bold text-nowrap text-white ">SKY WAVES FINANCIAL</h5>
             <p className="small">Banking At Your Service</p>
           </div>
 
           <div className="col-md-2 col-lg-2 col-xl-2">
-            <h6 className="mb-2 fw-bold text-white small">PRIVACY</h6>
+            <h5 className="mb-2 fw-bold text-white ">PRIVACY</h5>
             <ul className="list-unstyled small">
               <li><a href="#" className="footer-link">Ad Agreement</a></li>
               <li><a href="#" className="footer-link">Use Policy</a></li>
@@ -25,7 +25,7 @@ const Footer = () => {
           </div>
 
           <div className="col-md-2 col-lg-2 col-xl-2">
-            <h6 className="mb-2 fw-bold text-white small">NAVIGATE</h6>
+            <h5 className="mb-2 fw-bold text-white ">NAVIGATE</h5>
             <ul className="list-unstyled small">
               <li><a href="#" className="footer-link">Advertisers</a></li>
               <li><a href="#" className="footer-link">Developers</a></li>
@@ -36,7 +36,7 @@ const Footer = () => {
           </div>
 
           <div className="col-md-3 col-lg-3 col-xl-3">
-            <h6 className="mb-2 fw-bold text-white small">CONTACT</h6>
+            <h5 className="mb-2 fw-bold text-white ">CONTACT</h5>
             <ul className="list-unstyled small">
               <li>18-03 NJ-208</li>
               <li>Franklin Lakes, NJ</li>

@@ -17,7 +17,7 @@ const CardFeature = ({ Icon, title, text, delay }) => (
         <Icon className="icon mb-3 text-primary" size={36} />
       </div>
       <h5 className="fw-bold text-dark">{title}</h5>
-      <p className="text-muted small">{text}</p>
+      <p className="text-muted ">{text}</p>
     </div>
   </motion.div>
 );
@@ -27,7 +27,7 @@ export default function WhyChooseUs() {
     <section className="why-choose-us py-5 bg-white">
       <div className="container text-center">
         <h2 className="fw-bold mb-2 text-dark">Why Choose Us</h2>
-        <p className="mb-5 text-muted">Here Are The Reason People Choose Us.</p>
+        <p className="mb-5 text-muted" style={{fontSize:'17px'}}>Here Are The Reason People Choose Us.</p>
 
         <div className="row g-3">
             

@@ -20,47 +20,60 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "./Dashboard.css";
 
-const API = "https://backend-dry-glade-5837.fly.dev";
+const API = 'https://backend-dry-glade-5837.fly.dev';
 
 export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 768);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [cardLoading, setCardLoading] = useState(true);
   const [transactions, setTransactions] = useState([]);
-
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
 
-const fetchDashboard = async () => {
-  try {
-    setLoading(true);
+  const fetchDashboard = async () => {
+    try {
+      setCardLoading(true);
+      const res = await fetch(`${API}/user/dashboard`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        credentials: "include",
+      });
 
-    const res = await fetch(`${API}/user/dashboard`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
-      },
-      credentials: "include",
-    });
+      const data = await res.json();
+      console.log("Dashboard fetch status:", res.status);
+      console.log("Fetched Dashboard data:", data);
 
-    const data = await res.json();
+      if (!data.accountNo) {
+        console.warn("Auth failed: Redirecting to login");
+        localStorage.removeItem("token");
+        return navigate("/login");
+      }
 
-    if (res.status === 401 || !data.success) {
+      setUser(data);
+      setTransactions(data.transactions?.slice(0, 10) || []);
+    } catch (error) {
+      console.error("Dashboard error:", error);
       localStorage.removeItem("token");
-      return navigate("/login");
+      navigate("/login");
+    } finally {
+      setLoading(false);
+      setCardLoading(false);
     }
+  };
 
-    setUser(data);
-    setTransactions((data.transactions || []).slice(0, 10));
-  } catch (error) {
-    console.error("Error fetching dashboard data:", error);
+  useEffect(() => {
+    fetchDashboard();
+    const interval = setInterval(fetchDashboard, 30000);
+    return () => clearInterval(interval);
+  }, [navigate]);
+
+  const logout = () => {
     localStorage.removeItem("token");
     navigate("/login");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   useEffect(() => {
     const handleResize = () => setSidebarOpen(window.innerWidth >= 768);
@@ -68,69 +81,21 @@ const fetchDashboard = async () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  useEffect(() => {
-    fetchDashboard();
-    const interval = setInterval(fetchDashboard, 10000);
-    return () => clearInterval(interval);
-  }, []);
+  if (loading) return (
+    <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "100vh" }}>
+      <div className="spinner-border text-primary" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  );
 
-  useEffect(() => {
-    const handleStorageChange = (e) => {
-      if (e.key === "dashboardRefresh") {
-        fetchDashboard();
-      }
-    };
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
-  }, []);
-
-  const logout = () => {
-    localStorage.removeItem("token");
-    navigate("/");
-  };
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
-  const stats = [
-    {
-      label: "ACCOUNT BALANCE",
-      value: `$${user?.totalAmount?.toLocaleString() || "0.00"}`,
-      icon: <DollarSign size={18} color="white" />,
-      bg: "#EA5455",
-    },
-    {
-      label: "ACCOUNT TYPE",
-      value: user?.accountType || "N/A",
-      icon: <MonitorSmartphone size={18} color="white" />,
-      bg: "#FF9F43",
-    },
-    {
-      label: "TOTAL TRANSACTIONS",
-      value: user?.totalTransactions ?? 0,
-      icon: <RotateCcw size={18} color="white" />,
-      bg: "#28C76F",
-    },
-    {
-      label: "ACCOUNT NO.",
-      value: user?.accountNumber || "N/A",
-      icon: <CreditCard size={18} color="white" />,
-      bg: "#7367F0",
-    },
-  ];
+  if (!user) return <div className="container py-5">No user data available.</div>;
 
   return (
     <div className="d-flex flex-column flex-md-row" style={{ minHeight: "100vh", backgroundColor: "#f5f7fb" }}>
-      {/* Sidebar */}
       <div
         className="bg-white border-end sidebar position-relative z-1"
-        style={{
-          width: sidebarOpen ? 200 : 60,
-          overflow: "hidden",
-          padding: sidebarOpen ? "20px 10px" : "10px 5px",
-          transition: "all 0.3s ease",
-        }}
+        style={{ width: sidebarOpen ? 200 : 60, overflow: "hidden", padding: sidebarOpen ? "20px 10px" : "10px 5px", transition: "all 0.3s ease" }}
       >
         <div className="position-relative mb-4 text-center">
           {sidebarOpen && (
@@ -143,34 +108,27 @@ const fetchDashboard = async () => {
         {sidebarOpen && (
           <>
             <div className="text-center mb-4">
-              <img
-                src={PROFILE}
-                alt="Profile"
-                className="rounded-circle border"
-                width="70"
-                height="70"
-                style={{ objectFit: "cover" }}
-              />
-              <div className="mt-2 small text-muted">{user?.username || "User"}</div>
+              <img src={PROFILE} alt="Profile" className="rounded-circle border" width="70" height="70" style={{ objectFit: "cover" }} />
+              <div className="mt-2 small text-muted"></div>
             </div>
             <ul className="nav flex-column fw-semibold fade-in">
               <li className="nav-item mb-3">
-                <Link to="/account" className="nav-link d-flex align-items-center text-dark" style={{ fontSize: "12px" }}>
+                <Link to="/account" className="nav-link d-flex align-items-center text-dark" style={{ fontSize: "17px" }}>
                   <LayoutDashboard color="#3e7bfa" size={18} className="me-2" /> Dashboard
                 </Link>
               </li>
               <li className="nav-item mb-3">
-                <Link to="/transfer" className="nav-link d-flex align-items-center text-dark" style={{ fontSize: "12px" }}>
+                <Link to="/transfer" className="nav-link d-flex align-items-center text-dark" style={{ fontSize: "17px" }}>
                   <SendHorizontal color="#28c76f" size={18} className="me-2" /> Transfer
                 </Link>
               </li>
               <li className="nav-item mb-3">
-                <Link to="/history" className="nav-link d-flex align-items-center text-dark" style={{ fontSize: "12px" }}>
+                <Link to="/history" className="nav-link d-flex align-items-center text-dark" style={{ fontSize: "17px" }}>
                   <History color="#ff9f43" size={18} className="me-2" /> History
                 </Link>
               </li>
               <li className="nav-item mb-3">
-                <Link to="/settings" className="nav-link d-flex align-items-center text-dark" style={{ fontSize: "12px" }}>
+                <Link to="/settings" className="nav-link d-flex align-items-center text-dark" style={{ fontSize: "17px" }}>
                   <Settings color="#7367f0" size={18} className="me-2" /> Settings
                 </Link>
               </li>
@@ -179,38 +137,19 @@ const fetchDashboard = async () => {
         )}
       </div>
 
-      {/* Main Content */}
       <div className="flex-grow-1 position-relative z-0 d-flex flex-column">
-        {/* Header */}
         <div className="p-3 p-md-4" style={{ backgroundColor: "#3e7bfa", color: "white" }}>
           <div className="d-flex justify-content-between align-items-center gap-2 mb-2 flex-wrap">
-            <button
-              className="btn btn-outline-light d-md-none"
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              title={sidebarOpen ? "Close Sidebar" : "Open Sidebar"}
-            >
+            <button className="btn btn-outline-light d-md-none" onClick={() => setSidebarOpen(!sidebarOpen)} title={sidebarOpen ? "Close Sidebar" : "Open Sidebar"}>
               <Menu size={20} />
             </button>
 
             <h5 className="fw-bold mb-0">My Dashboard</h5>
 
             <div className="dropdown">
-              <button
-                className="btn btn-outline-light dropdown-toggle d-flex align-items-center"
-                type="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                <span className="me-2 d-none d-sm-inline" style={{ fontFamily: "cursive", fontSize: "12px" }}>
-                  {user?.username || "User"}
-                </span>
-                <img
-                  src={PROFILE}
-                  className="rounded-circle border profile-img"
-                  width="40"
-                  height="40"
-                  alt="User"
-                />
+              <button className="btn btn-outline-light dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <span className="me-2 d-none d-sm-inline" style={{ fontFamily: "cursive", fontSize: "17px" }}>Williams Chandler</span>
+                <img src={PROFILE} className="rounded-circle border profile-img" width="40" height="40" alt="User" />
               </button>
               <ul className="dropdown-menu dropdown-menu-end">
                 <li><Link className="dropdown-item" to="/profile">Profile</Link></li>
@@ -222,53 +161,67 @@ const fetchDashboard = async () => {
           </div>
         </div>
 
-        {/* Stats Cards */}
         <div className="row g-3 g-md-4 p-3 p-md-4" style={{ backgroundColor: "#f0f4ff", color: "#333" }}>
-          {loading ? (
-            Array(4).fill(null).map((_, idx) => (
-              <div className="col-6 col-md-3" key={idx}>
-                <div className="card text-center shadow-sm h-100">
-                  <div className="card-body d-flex flex-column justify-content-center align-items-center gap-2">
-                    <div className="rounded-circle mb-1" style={{ backgroundColor: '#dee2e6', width: 35, height: 35 }} />
-                    <div className="placeholder-glow w-75">
-                      <span className="placeholder col-12 mb-1"></span>
-                      <span className="placeholder col-8"></span>
-                    </div>
+          {[{
+            label: "ACCOUNT BALANCE",
+            value: `$${user?.totalAmount?.toLocaleString() || "0.00"}`,
+            icon: <DollarSign size={18} color="white" />,
+            bg: "#EA5455",
+          },
+          {
+            label: "ACCOUNT TYPE",
+            value: user?.accountType || "N/A",
+            icon: <MonitorSmartphone size={18} color="white" />,
+            bg: "#FF9F43",
+          },
+          {
+            label: "TOTAL TRANSACTIONS",
+            value: user?.totalTransactions ?? 0,
+            icon: <RotateCcw size={18} color="white" />,
+            bg: "#28C76F",
+          },
+          {
+            label: "ACCOUNT NO.",
+            value: user?.accountNumber || "N/A",
+            icon: <CreditCard size={18} color="white" />,
+            bg: "#7367F0",
+          }].map((item, idx) => (
+            <div className="col-6 col-md-3" key={idx}>
+              <div className="card text-center shadow-sm h-100">
+                <div className="card-body d-flex flex-column justify-content-center align-items-center gap-2">
+                  <div className="rounded-circle d-flex align-items-center justify-content-center mb-1" style={{ backgroundColor: item.bg, width: 35, height: 35 }}>
+                    {item.icon}
                   </div>
+                  {cardLoading ? (
+                    <>
+                      <p className="placeholder-glow w-75 mb-1"><span className="placeholder col-12"></span></p>
+                      <p className="placeholder-glow w-50"><span className="placeholder col-12"></span></p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-muted small mb-1" style={{ fontSize: '17px' }}>{item.label}</p>
+                      <h6 className="text-dark mb-0">{item.value}</h6>
+                    </>
+                  )}
                 </div>
               </div>
-            ))
-          ) : (
-            stats.map((item, idx) => (
-              <div className="col-6 col-md-3" key={idx}>
-                <div className="card text-center shadow-sm h-100">
-                  <div className="card-body d-flex flex-column justify-content-center align-items-center gap-2">
-                    <div className="rounded-circle d-flex align-items-center justify-content-center mb-1" style={{ backgroundColor: item.bg, width: 35, height: 35 }}>
-                      {item.icon}
-                    </div>
-                    <p className="text-muted small mb-1" style={{ fontSize: '12px' }}>{item.label}</p>
-                    <h6 className="text-dark stat-value mb-0">{item.value}</h6>
-                  </div>
-                </div>
-              </div>
-            ))
-          )}
+            </div>
+          ))}
         </div>
 
-        {/* Transaction History */}
         <div className="px-2 px-md-4 pb-4">
           <h6 className="mb-3 fw-semibold">Last 10 Transaction History</h6>
           <div className="table-responsive">
             <table className="table table-bordered bg-white">
               <thead className="table-head">
                 <tr>
-                  <th style={{ backgroundColor: '#d3d3d3', fontSize: '9px' }}>#</th>
-                  <th style={{ backgroundColor: '#d3d3d3', fontSize: '9px' }}>REFERENCE</th>
-                  <th style={{ backgroundColor: '#d3d3d3', fontSize: '9px' }}>AMOUNT</th>
-                  <th style={{ backgroundColor: '#d3d3d3', fontSize: '9px' }}>TYPE</th>
-                  <th style={{ backgroundColor: '#d3d3d3', fontSize: '9px' }}>DESC</th>
-                  <th style={{ backgroundColor: '#d3d3d3', fontSize: '9px' }}>DATE</th>
-                  <th style={{ backgroundColor: '#d3d3d3', fontSize: '9px' }}>STATUS</th>
+                  <th style={{ backgroundColor: '#d3d3d3', fontSize: '15px' }}>#</th>
+                  <th style={{ backgroundColor: '#d3d3d3', fontSize: '15px' }}>REFERENCE</th>
+                  <th style={{ backgroundColor: '#d3d3d3', fontSize: '15px' }}>AMOUNT</th>
+                  <th style={{ backgroundColor: '#d3d3d3', fontSize: '15px' }}>TYPE</th>
+                  <th style={{ backgroundColor: '#d3d3d3', fontSize: '15px' }}>DESC</th>
+                  <th style={{ backgroundColor: '#d3d3d3', fontSize: '15px' }}>DATE</th>
+                  <th style={{ backgroundColor: '#d3d3d3', fontSize: '15px' }}>STATUS</th>
                 </tr>
               </thead>
               <tbody>
@@ -298,18 +251,17 @@ const fetchDashboard = async () => {
           </div>
         </div>
 
-        {/* Footer Nav */}
         <div className="d-flex flex-wrap justify-content-around border-top p-3 bg-white w-100">
-          <Link to="/" className="btn text-center flex-fill" style={{ fontSize: '12px' }}>
+          <Link to="/" className="btn text-center flex-fill" style={{ fontSize: '17px' }}>
             <Home size={20} color="#3e7bfa" /> <br className="d-none d-sm-block" /> Home
           </Link>
-          <Link to="/investment" className="btn text-center flex-fill" style={{ fontSize: '12px' }}>
+          <Link to="/investment" className="btn text-center flex-fill" style={{ fontSize: '17px' }}>
             <TrendingUp size={20} color="#28c76f" /> <br className="d-none d-sm-block" /> Investment
           </Link>
-          <Link to="/send" className="btn text-center flex-fill" style={{ fontSize: '12px' }}>
+          <Link to="/send" className="btn text-center flex-fill" style={{ fontSize: '17px' }}>
             <Send size={20} color="#ff9f43" /> <br className="d-none d-sm-block" /> Send
           </Link>
-          <Link to="/card" className="btn text-center flex-fill" style={{ fontSize: '12px' }}>
+          <Link to="/card" className="btn text-center flex-fill" style={{ fontSize: '17px' }}>
             <CreditCard size={20} color="#7367f0" /> <br className="d-none d-sm-block" /> Card
           </Link>
         </div>

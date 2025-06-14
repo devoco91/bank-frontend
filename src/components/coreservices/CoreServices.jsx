@@ -27,9 +27,9 @@ export default function CoreServices() {
     <div className="bg-light">
       <section className="text-center text-white py-5" style={{ backgroundColor: '#0a3d91' }}>
         <div className="container">
-          <p className="text-uppercase text-info mb-1">Our Services</p>
+          <h5 className="text-uppercase text-info mb-1">Our Services</h5>
           <h4 className="mb-3">Our Core Services</h4>
-          <p className="mb-5" style={{ fontSize: '12px', color: '#c4c4c4' }}>All our services are reliable anytime anywhere 2/4/7.</p>
+          <p className="mb-5" style={{ fontSize: '17px', color: '#c4c4c4' }}>All our services are reliable anytime anywhere 2/4/7.</p>
 
           <div className="row growth d-none d-md-flex">
             {services.map((srv, i) => (

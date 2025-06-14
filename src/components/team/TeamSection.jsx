@@ -23,8 +23,8 @@ const directions = [
 export default function TeamSection() {
   return (
     <div className="text-center py-5 bg-white">
-      <h6 className="text-primary">Our Creative Team</h6>
-      <h5 className="mb-5">Our Awesome Team</h5>
+      <h5 className="text-primary">Our Creative Team</h5>
+      <h4 className="mb-5">Our Awesome Team</h4>
       <div className="container">
         <div className="row justify-content-center">
           {teamMembers.map((member, idx) => (
@@ -58,9 +58,9 @@ export default function TeamSection() {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4, duration: 0.4 }}
                 >
-                  <h6 className="mt-3" style={{ fontSize: '14px' }}>{member.name}</h6>
+                  <h6 className="mt-3" style={{ fontSize: '20px' }}>{member.name}</h6>
                   <hr className="mx-auto" style={{ width: "50px", height: "2px", background: "#c7a36f" }} />
-                  <p className="text-muted m-0" style={{ fontSize: '12px' }}>{member.title}</p>
+                  <p className="text-muted m-0" style={{ fontSize: '17px' }}>{member.title}</p>
                 </motion.div>
               </div>
             </motion.div>

@@ -30,7 +30,7 @@ export default function PartnerSection() {
   return (
     <div className="position-relative text-center py-5 bg-white overflow-hidden">
       
-      <h6
+      <h5
         className="text-primary fw-bold"
         style={{
           background: "linear-gradient(to right, #00c6ff, #0072ff)",
@@ -40,7 +40,7 @@ export default function PartnerSection() {
         data-aos="fade-up"
       >
         Our Main Partners
-      </h6>
+      </h5>
       <h2 className="fw-bold mb-5" data-aos="fade-up" data-aos-delay="150">
         Our Powerful Partners
       </h2>

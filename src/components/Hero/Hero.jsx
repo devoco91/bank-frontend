@@ -25,13 +25,13 @@ export default function Hero() {
       <div className="container">
         <div className="row ">
           <div className="col-md-6 ">
-            <p className="trusted">Trusted Online Payment Platform</p>
-            <h4 className="fw-bold">
+            <h5 className="trusted">Trusted Online Payment Platform</h5>
+            <h2 className="fw-bold">
               Transfer Money Across World
               <br />
               In Real Time With <span className="rotating-word">{currentWord}</span>
-            </h4>
-            <p className=" text-light fw-normal mt-4">
+            </h2>
+            <p className=" text-light fw-normal mt-4 hero-p ">
               We work with you to protect your account information. Under our Security Guarantee,
               we will fully reimburse you for unauthorized transactions conducted in your personal
               accounts through SKY WAVES FINANCIAL Online banking if you have met your security responsibilities.

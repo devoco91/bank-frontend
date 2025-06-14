@@ -40,15 +40,16 @@ const Signup = () => {
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       minHeight: '100vh',
-      paddingTop: '50px'
+      paddingTop: '50px',
+      // fontSize:'20px'
     }}>
       <Navbar />
       <Container className='sign'>
-        <h5 className="text-center mb-3 text-light">Welcome Dear Customer!</h5>
+        <h4 className="text-center mb-3 text-light">Welcome Dear Customer!</h4>
         <Row className="justify-content-center">
           <Col xs={12} md={6} lg={5}>
-            <div className="bg-light p-4 rounded shadow-sm">
-              <p className="text-center text-muted" style={{ fontSize: '12px' }}>Fill in your necessary credentials and signup</p>
+            <div className="bg-light p-4 rounded shadow-sm mb-3">
+              <p className="text-center text-muted" style={{ fontSize: '17px' }}>Fill in your necessary credentials and signup</p>
               <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3 d-flex align-items-center">
                   <FaUser className="me-2 text-muted" />
@@ -128,7 +129,7 @@ const Signup = () => {
                   <Form.Check
                     type="checkbox"
                     onChange={(e) => setAgreed(e.target.checked)}
-                    label={<span style={{ fontSize: '12px' }}>By creating an account, you agree with the <a href="/terms" style={{ textDecoration: 'none', color: 'blue' }}>terms and conditions</a></span>}
+                    label={<span style={{ fontSize: '17px' }}>By creating an account, you agree with the <a href="/terms" style={{ textDecoration: 'none', color: 'blue' }}>terms and conditions</a></span>}
                   />
                 </Form.Group>
                 <div className="d-grid">

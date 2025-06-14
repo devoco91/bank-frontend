@@ -14,9 +14,9 @@ const ServicesHeader = () => {
       <Container>
         <h4 style={{ fontWeight: '600', fontSize: '1.5rem', marginBottom: '10px' }}>Our Services</h4>
         <div style={{ fontSize: '0.9rem', letterSpacing: '1px' }}>
-          <span style={{ marginRight: '10px',fontSize:'7px' }}>HOME</span>
+          <span style={{ marginRight: '10px',fontSize:'12px' }}>HOME</span>
           <span style={{ color: '#ccc' }}>|</span>
-          <span style={{ marginLeft: '10px' ,fontSize:'7px'}}>SERVICES</span>
+          <span style={{ marginLeft: '10px' ,fontSize:'12px'}}>SERVICES</span>
         </div>
       </Container>
     </div>

@@ -34,12 +34,12 @@ const Deposit = () => {
             </div>
           </div>
 
-          <div className="col-12 col-md-6">
-            <h6 className="text-primary">Reliable Online Payment Platform</h6>
-            <h5 className="mb-3">
+          <div className="col-12 col-md-6 " >
+            <h5 className="text-primary mb-3">Reliable Online Payment Platform</h5>
+            <h4 className="mb-3">
               Transfer and Deposit your money anytime, anywhere in the world
-            </h5>
-            <p className="text-muted small">
+            </h4>
+            <p className="text-muted ">
               Our Money Transfer service allows customers to transfer funds to any
               beneficiary in another country in a secure, reliable and efficient way.
             </p>
@@ -47,8 +47,8 @@ const Deposit = () => {
               <div className="d-flex align-items-start">
                 <i className="bi bi-check-circle-fill text-success me-2 fs-5"></i>
                 <div>
-                  <strong>Trusted And Reliable</strong>
-                  <p className="mb-0 text-muted small">
+                  <h5><strong>Trusted And Reliable</strong></h5>
+                  <p className="mb-0 text-muted ">
                     We are a trusted and reliable company with over 6 years of experience.
                   </p>
                 </div>
@@ -56,8 +56,8 @@ const Deposit = () => {
               <div className="d-flex align-items-start">
                 <i className="bi bi-check-circle-fill text-success me-2 fs-5"></i>
                 <div>
-                  <strong>Brings More Transparency And Speed</strong>
-                  <p className="mb-0 text-muted small">
+                  <h5><strong>Brings More Transparency And Speed</strong></h5>
+                  <p className="mb-0 text-muted ">
                     Our system are built using blockchain technology, 100% Transparency System Where
                     both sender and receiver can see transactions details.
                   </p>
@@ -66,8 +66,8 @@ const Deposit = () => {
               <div className="d-flex align-items-start">
                 <i className="bi bi-check-circle-fill text-success me-2 fs-5"></i>
                 <div>
-                  <strong>Special For Multiple Use Capabilities</strong>
-                  <p className="mb-0 text-muted small">
+                  <h5><strong>Special For Multiple Use Capabilities</strong></h5>
+                  <p className="mb-0 text-muted ">
                     Our system are scalable and efficiency for more capabilities usages.
                   </p>
                 </div>

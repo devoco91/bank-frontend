@@ -12,7 +12,7 @@ const Contact = () => {
         window.scrollTo(0,0)
       })
   return (
-    <div style={{marginTop:'80px'}}>
+    <div style={{marginTop:'70px'}}>
         <Navbar/>
         <ContactHeader/>
         <ContactForm/>

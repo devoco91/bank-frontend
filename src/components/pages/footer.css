@@ -23,3 +23,8 @@
   color: #ffffff;
   text-decoration: underline;
 }
+
+
+.defect a, .defect p, .defect li{
+  font-size: 17px;
+}

@@ -3,50 +3,61 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const API = 'https://backend-dry-glade-5837.fly.dev';
+const API = 'http://localhost:3000';
 
 export default function LoginPage() {
-  const [accountNo, setAccountNo] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-
-  const login = async () => {
-    if (!accountNo || !password) return alert("Please fill in all fields");
-
-    try {
-      setLoading(true);
-      const res = await fetch(`${API}/auth/signin`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ accountNo, password }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok && data.success) {
-        // ✅ Save token for future requests
-        if (data.token) {
-          localStorage.setItem('token', data.token);
-        }
-
-        // ✅ Navigate to dashboard after login
-        navigate('/dashboard');
-      } else {
-        alert(data.error || 'Login failed');
+   const [accountNo, setAccountNo] = useState("");
+    const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const navigate = useNavigate();
+  
+    const handleLogin = async () => {
+      if (!accountNo || !password) {
+        console.warn("Login attempt with empty fields");
+        return setError("Please fill in all fields");
       }
-    } catch (err) {
-      alert('Network error');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
+  
+      try {
+        setLoading(true);
+        console.log("Sending login request...", { accountNo, password });
+  
+        const res = await fetch(`${API}/auth/signin`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ accountNo, password }),
+        });
+  
+        const data = await res.json();
+        console.log("Login response status:", res.status);
+        console.log("Login response data:", data);
+  
+        if (res.ok && data.token) {
+          console.log("Login successful, saving token and navigating to /dashboard");
+          localStorage.setItem("token", data.token);
+          setTimeout(() => {
+            navigate("/dashboard");
+          }, 100);
+        } else {
+          console.warn("Login failed:", data.error || "Invalid credentials");
+          setError(data.error || "Invalid credentials");
+        }
+      } catch (err) {
+        const msg = err?.message || "Something went wrong";
+        console.error("Login error:", msg, err);
+        setError(msg);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    const closeModal = () => setError("");
+  
+    useEffect(() => {
+      window.scrollTo(0, 0);
+    }, []);
+  
   return (
     <div className="container d-flex justify-content-center align-items-center vh-100">
       <div className="w-100" style={{ maxWidth: '400px' }}>
@@ -77,7 +88,7 @@ export default function LoginPage() {
 
           <button
             className="btn btn-primary w-100"
-            onClick={login}
+            onClick={handleLogin}
             disabled={loading}
           >
             {loading ? 'Logging in...' : 'Login'}

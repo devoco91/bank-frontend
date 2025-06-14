@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const API = 'https://backend-dry-glade-5837.fly.dev';
+// const API = 'http://localhost:3000';
+
 
 export default function DashboardPage() {
   const [user, setUser] = useState(null);
@@ -13,49 +15,50 @@ export default function DashboardPage() {
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  const authHeaders = { 'Content-Type': 'application/json' };
-
   useEffect(() => {
-    fetchDashboard();
-  }, []);
+    const token = localStorage.getItem('token');
+    if (!token) return navigate('/auth');
 
-  useEffect(() => {
+    fetchDashboard(token);
     window.scrollTo(0, 0);
-  }, []);
+  }, [navigate]);
 
-  const logout = async () => {
-    await fetch(`${API}/auth/signout`, {
-      method: 'POST',
-      credentials: 'include',
-    });
-    navigate('/auth');
+  const fetchDashboard = async (token) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API}/user/dashboard`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: 'include',
+      });
+
+      const data = await res.json();
+      console.log("Dashboard fetch status:", res.status);
+      console.log("Fetched Dashboard data:", data);
+
+      if (!res.ok || !data.accountNo) {
+        localStorage.removeItem('token');
+        return navigate('/auth');
+      }
+
+      setUser(data);
+      setTransactions(Array.isArray(data.transactions) ? data.transactions.slice(0, 10) : []);
+    } catch (e) {
+      console.error('Dashboard fetch failed', e);
+      localStorage.removeItem('token');
+      navigate('/auth');
+    } finally {
+      setLoading(false);
+    }
   };
 
-const fetchDashboard = async () => {
-  setLoading(true);
-  try {
-    const res = await fetch(`${API}/user/dashboard`, {
-      headers: authHeaders,
-      credentials: "include",
-    });
-
-    if (res.status === 401 || res.status === 403) {
-      localStorage.removeItem("token");
-      return logout();
-    }
-
-    const data = await res.json();
-    setUser(data);
-    setTransactions(Array.isArray(data.transactions) ? data.transactions.slice(0, 10) : []);
-  } catch (e) {
-    console.error("Dashboard fetch failed", e);
-    localStorage.removeItem("token");
-    logout();
-  } finally {
-    setLoading(false);
-  }
-};
-
+  const logout = () => {
+    localStorage.removeItem('token');
+    navigate('/auth');
+  };
 
   const createBalance = async () => {
     const amt = prompt('Enter initial balance:');
@@ -63,11 +66,14 @@ const fetchDashboard = async () => {
     try {
       await fetch(`${API}/user/total-amount`, {
         method: 'POST',
-        headers: authHeaders,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
         credentials: 'include',
         body: JSON.stringify({ totalAmount: Number(amt) }),
       });
-      fetchDashboard();
+      fetchDashboard(localStorage.getItem('token'));
     } catch (e) {
       alert('Failed to create balance');
       console.error(e);
@@ -80,11 +86,14 @@ const fetchDashboard = async () => {
     try {
       await fetch(`${API}/user/total-amount`, {
         method: 'PUT',
-        headers: authHeaders,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
         credentials: 'include',
         body: JSON.stringify({ totalAmount: Number(amt) }),
       });
-      fetchDashboard();
+      fetchDashboard(localStorage.getItem('token'));
     } catch (e) {
       alert('Failed to update balance');
       console.error(e);
@@ -92,17 +101,47 @@ const fetchDashboard = async () => {
   };
 
   const deleteBalance = async () => {
-    const confirmDelete = window.confirm('Are you sure you want to reset the balance?');
-    if (!confirmDelete) return;
+    if (!window.confirm('Are you sure you want to reset the balance?')) return;
     try {
       await fetch(`${API}/user/total-amount`, {
         method: 'DELETE',
-        headers: authHeaders,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
         credentials: 'include',
       });
-      fetchDashboard();
+      fetchDashboard(localStorage.getItem('token'));
     } catch (e) {
       alert('Failed to delete balance');
+      console.error(e);
+    }
+  };
+
+  const startEdit = (txn) => {
+    setIsEditing(true);
+    setEditId(txn._id);
+    setForm({
+      type: txn.type,
+      amount: txn.amount.toString(),
+      description: txn.description || '',
+      reference: txn.reference || '',
+    });
+  };
+
+  const deleteTransaction = async (id) => {
+    try {
+      await fetch(`${API}/transactions/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        credentials: 'include',
+      });
+      fetchDashboard(localStorage.getItem('token'));
+    } catch (e) {
+      alert('Failed to delete transaction');
       console.error(e);
     }
   };
@@ -117,82 +156,38 @@ const fetchDashboard = async () => {
 
     try {
       setSubmitting(true);
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      };
 
       if (isEditing) {
-        const oldTx = transactions.find((t) => t._id === editId);
-        const oldAmount = Number(oldTx?.amount || 0);
-        const delta =
-          form.type === oldTx.type
-            ? amount - oldAmount
-            : form.type === 'credit'
-            ? amount + oldAmount
-            : -1 * (amount + oldAmount);
-
         await fetch(`${API}/transactions/${editId}`, {
           method: 'PUT',
-          headers: authHeaders,
+          headers,
           credentials: 'include',
           body: JSON.stringify({ ...form, amount }),
-        });
-
-        await fetch(`${API}/user/total-amount`, {
-          method: 'PUT',
-          headers: authHeaders,
-          credentials: 'include',
-          body: JSON.stringify({ totalAmount: user.totalAmount + delta }),
         });
       } else {
         await fetch(`${API}/transactions`, {
           method: 'POST',
-          headers: authHeaders,
+          headers,
           credentials: 'include',
           body: JSON.stringify({ ...form, amount }),
-        });
-
-        const delta = form.type === 'credit' ? amount : -amount;
-        await fetch(`${API}/user/total-amount`, {
-          method: 'PUT',
-          headers: authHeaders,
-          credentials: 'include',
-          body: JSON.stringify({ totalAmount: user.totalAmount + delta }),
         });
       }
 
       setForm({ type: 'credit', amount: '', description: '', reference: '' });
       setIsEditing(false);
       setEditId(null);
-      fetchDashboard();
+      fetchDashboard(token);
     } catch (e) {
       alert('Failed to submit transaction');
       console.error(e);
     } finally {
       setSubmitting(false);
     }
-  };
-
-  const deleteTransaction = async (id) => {
-    try {
-      await fetch(`${API}/transactions/${id}`, {
-        method: 'DELETE',
-        headers: authHeaders,
-        credentials: 'include',
-      });
-      fetchDashboard();
-    } catch (e) {
-      alert('Failed to delete transaction');
-      console.error(e);
-    }
-  };
-
-  const startEdit = (txn) => {
-    setIsEditing(true);
-    setEditId(txn._id);
-    setForm({
-      type: txn.type,
-      amount: txn.amount.toString(),
-      description: txn.description || '',
-      reference: txn.reference || '',
-    });
   };
 
   if (loading) return <div className="container py-5">Loading dashboard...</div>;
@@ -235,15 +230,9 @@ const fetchDashboard = async () => {
       </div>
 
       <div className="mb-4 d-flex flex-wrap gap-2">
-        <button className="btn btn-primary" onClick={createBalance}>
-          Create Balance
-        </button>
-        <button className="btn btn-secondary" onClick={updateTotal}>
-          Update Balance
-        </button>
-        <button className="btn btn-danger" onClick={deleteBalance}>
-          Delete Balance
-        </button>
+        <button className="btn btn-primary" onClick={createBalance}>Create Balance</button>
+        <button className="btn btn-secondary" onClick={updateTotal}>Update Balance</button>
+        <button className="btn btn-danger" onClick={deleteBalance}>Delete Balance</button>
       </div>
 
       <div className="mb-5">
