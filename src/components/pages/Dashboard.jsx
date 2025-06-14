@@ -94,7 +94,7 @@ export default function Dashboard() {
 
         <div className="text-center mb-4">
           <img src={LOGO} alt="Logo" className="img-fluid mb-3" style={{ maxWidth: "120px" }} />
-          <img src={PROFILE} alt="Profile" className="rounded-circle border" width="70" height="70" />
+          <img src='' alt="Profile" className="rounded-circle border" width="70" height="70" />
         </div>
 
         <ul className="nav flex-column fw-semibold">
@@ -133,7 +133,7 @@ export default function Dashboard() {
             <div className="dropdown">
               <button className="btn btn-outline-light dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <span className="me-2 d-none d-sm-inline" style={{ fontFamily: "cursive", fontSize: "17px" }}>Williams Chandler</span>
-                <img src={PROFILE} className="rounded-circle border profile-img" width="40" height="40" alt="User" />
+                <img src='' className="rounded-circle border profile-img" width="40" height="40" alt="User" />
               </button>
               <ul className="dropdown-menu dropdown-menu-end">
                 <li><Link className="dropdown-item" to="/profile">Profile</Link></li>
