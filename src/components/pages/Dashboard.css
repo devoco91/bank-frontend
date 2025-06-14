@@ -1,96 +1,58 @@
-/* Ensure all cards have subtle shadow and lift effect */
-.row .card {
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.row .card:hover {
-  transform: translateY(-4px);
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.08), 0 8px 16px rgba(0, 0, 0, 0.1);
-}
-
-/* Font size tuning for stat numbers and table */
-.stat-value {
-  font-size: 0.8rem;
-}
-
-.table-cell {
-  font-size: 0.75rem;
-}
-
-/* Sidebar animation */
-.sidebar {
-  transition: all 0.3s ease-in-out;
-}
-
-/* Profile picture fix */
-.profile-img {
-  border-radius: 50% !important;
-  object-fit: cover;
-}
-
-
-/* Hamburger toggle button inside sidebar */
-.toggle-btn {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 2;
-  padding: 6px 10px;
-}
-
-/* Optional: smoother sidebar transition for smaller size */
-.sidebar {
-  transition: width 0.3s ease-in-out, padding 0.3s ease;
-}
-
-
-
-/* Sidebar */
+/* Default sidebar hidden */
 .sidebar-container {
   position: fixed;
   top: 0;
-  left: 0;
-  height: 100vh;
-  width: 220px;
-  background-color: white;
-  box-shadow: 2px 0 8px rgba(0,0,0,0.1);
-  transform: translateX(-100%);
-  transition: transform 0.3s ease;
+  left: -250px;
+  bottom: 0;
+  width: 250px;
+  background: white;
+  padding: 1rem;
   z-index: 1050;
-  padding: 20px 10px;
+  transition: all 0.3s ease;
+  overflow-y: auto;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
 }
 
+/* Sidebar visible on small screens when toggled */
 .sidebar-container.open {
-  transform: translateX(0);
+  left: 0;
 }
 
-/* Overlay */
+/* Force sidebar to show on md and up */
+@media (min-width: 768px) {
+  .sidebar-container {
+    left: 0 !important;
+    position: relative;
+    box-shadow: none;
+    height: auto;
+  }
+
+  .sidebar-overlay {
+    display: none !important;
+  }
+
+  .sidebar-close-btn {
+    display: none !important;
+  }
+}
+
+/* Dark overlay when sidebar is open on mobile */
 .sidebar-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  height: 100%;
-  width: 100%;
-  background: rgba(0,0,0,0.3);
+  right: 0;
+  bottom: 0;
   z-index: 1040;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s ease;
+  background-color: rgba(0, 0, 0, 0.3);
 }
 
-.sidebar-overlay.active {
-  opacity: 1;
-  visibility: visible;
-}
-
-/* Close Button */
+/* Close button for mobile */
 .sidebar-close-btn {
   position: absolute;
   top: 10px;
-  right: 10px;
+  right: 15px;
   background: none;
   border: none;
+  font-size: 1.5rem;
 }
-
-

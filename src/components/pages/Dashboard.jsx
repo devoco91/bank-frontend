@@ -38,7 +38,6 @@ export default function Dashboard() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        credentials: "include",
       });
 
       const data = await res.json();
@@ -49,7 +48,8 @@ export default function Dashboard() {
       }
 
       setUser(data);
-      setTransactions(data.transactions?.slice(0, 10) || []);
+      const sortedTxns = (data.transactions || []).sort((a, b) => new Date(b.date) - new Date(a.date));
+      setTransactions(sortedTxns.slice(0, 10));
     } catch (error) {
       localStorage.removeItem("token");
       navigate("/login");
@@ -81,12 +81,8 @@ export default function Dashboard() {
 
   return (
     <div className="d-flex flex-column flex-md-row" style={{ minHeight: "100vh", backgroundColor: "#f5f7fb" }}>
-      {/* Overlay */}
-      {sidebarOpen && (
-        <div className="sidebar-overlay active" onClick={() => setSidebarOpen(false)} />
-      )}
+      {sidebarOpen && <div className="sidebar-overlay active" onClick={() => setSidebarOpen(false)} />}
 
-      {/* Slide-in Sidebar */}
       <div className={`sidebar-container ${sidebarOpen ? 'open' : ''} d-md-block`}>
         <button className="sidebar-close-btn d-md-none" onClick={() => setSidebarOpen(false)}>
           <span className="fs-4">&times;</span>
@@ -100,22 +96,22 @@ export default function Dashboard() {
         <ul className="nav flex-column fw-semibold">
           <li className="nav-item mb-3">
             <Link to="/account" className="nav-link text-dark d-flex align-items-center" onClick={() => setSidebarOpen(false)}>
-              <LayoutDashboard size={18} className="me-2" /> Dashboard
+              <LayoutDashboard size={18} className="me-2 text-primary" /> Dashboard
             </Link>
           </li>
           <li className="nav-item mb-3">
             <Link to="/transfer" className="nav-link text-dark d-flex align-items-center" onClick={() => setSidebarOpen(false)}>
-              <SendHorizontal size={18} className="me-2" /> Transfer
+              <SendHorizontal size={18} className="me-2 text-warning" /> Transfer
             </Link>
           </li>
           <li className="nav-item mb-3">
             <Link to="/history" className="nav-link text-dark d-flex align-items-center" onClick={() => setSidebarOpen(false)}>
-              <History size={18} className="me-2" /> History
+              <History size={18} className="me-2 text-success" /> History
             </Link>
           </li>
           <li className="nav-item mb-3">
             <Link to="/settings" className="nav-link text-dark d-flex align-items-center" onClick={() => setSidebarOpen(false)}>
-              <Settings size={18} className="me-2" /> Settings
+              <Settings size={18} className="me-2 text-danger" /> Settings
             </Link>
           </li>
         </ul>
@@ -127,9 +123,7 @@ export default function Dashboard() {
             <button className="btn btn-outline-light d-md-none" onClick={() => setSidebarOpen(true)}>
               <Menu size={20} />
             </button>
-
             <h5 className="fw-bold mb-0">My Dashboard</h5>
-
             <div className="dropdown">
               <button className="btn btn-outline-light dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <span className="me-2 d-none d-sm-inline" style={{ fontFamily: "cursive", fontSize: "17px" }}>Williams Chandler</span>
@@ -151,20 +145,17 @@ export default function Dashboard() {
             value: `$${user?.totalAmount?.toLocaleString() || "0.00"}`,
             icon: <DollarSign size={18} color="white" />,
             bg: "#EA5455",
-          },
-          {
+          }, {
             label: "ACCOUNT TYPE",
             value: user?.accountType || "N/A",
             icon: <MonitorSmartphone size={18} color="white" />,
             bg: "#FF9F43",
-          },
-          {
+          }, {
             label: "TOTAL TRANSACTIONS",
             value: user?.totalTransactions ?? 0,
             icon: <RotateCcw size={18} color="white" />,
             bg: "#28C76F",
-          },
-          {
+          }, {
             label: "ACCOUNT NO.",
             value: user?.accountNumber || "N/A",
             icon: <CreditCard size={18} color="white" />,
@@ -190,13 +181,13 @@ export default function Dashboard() {
             <table className="table table-bordered bg-white">
               <thead className="table-head">
                 <tr>
-                  <th style={{ backgroundColor: '#d3d3d3', fontSize: '15px' }}>#</th>
-                  <th style={{ backgroundColor: '#d3d3d3', fontSize: '15px' }}>REFERENCE</th>
-                  <th style={{ backgroundColor: '#d3d3d3', fontSize: '15px' }}>AMOUNT</th>
-                  <th style={{ backgroundColor: '#d3d3d3', fontSize: '15px' }}>TYPE</th>
-                  <th style={{ backgroundColor: '#d3d3d3', fontSize: '15px' }}>DESC</th>
-                  <th style={{ backgroundColor: '#d3d3d3', fontSize: '15px' }}>DATE</th>
-                  <th style={{ backgroundColor: '#d3d3d3', fontSize: '15px' }}>STATUS</th>
+                  <th>#</th>
+                  <th>REFERENCE</th>
+                  <th>AMOUNT</th>
+                  <th>TYPE</th>
+                  <th>DESC</th>
+                  <th>DATE</th>
+                  <th>STATUS</th>
                 </tr>
               </thead>
               <tbody>
@@ -207,9 +198,7 @@ export default function Dashboard() {
                       <td>{txn.reference}</td>
                       <td>${txn.amount}</td>
                       <td>
-                        <span className={`badge ${txn.type === "credit" ? "bg-success" : "bg-danger"}`}>
-                          {txn.type}
-                        </span>
+                        <span className={`badge ${txn.type === "credit" ? "bg-success" : "bg-danger"}`}>{txn.type}</span>
                       </td>
                       <td>{txn.description}</td>
                       <td>{new Date(txn.date).toLocaleString()}</td>
