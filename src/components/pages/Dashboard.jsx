@@ -60,7 +60,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchDashboard();
-    const interval = setInterval(fetchDashboard, 30000);
+    const interval = setInterval(fetchDashboard, 10000);
     return () => clearInterval(interval);
   }, [navigate]);
 
