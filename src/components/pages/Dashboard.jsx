@@ -28,6 +28,8 @@ export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [transactions, setTransactions] = useState([]);
+  const [statsLoading, setStatsLoading] = useState(true);
+  const [statsUser, setStatsUser] = useState(null);
   const navigate = useNavigate();
 
   const fetchDashboard = async () => {
@@ -39,14 +41,11 @@ export default function Dashboard() {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-
       const data = await res.json();
-
       if (!data.accountNo) {
         localStorage.removeItem("token");
         return navigate("/login");
       }
-
       setUser(data);
       const sortedTxns = (data.transactions || []).sort((a, b) => new Date(b.date) - new Date(a.date));
       setTransactions(sortedTxns.slice(0, 10));
@@ -58,9 +57,29 @@ export default function Dashboard() {
     }
   };
 
+  const fetchStats = async () => {
+    try {
+      setStatsLoading(true);
+      const res = await fetch(`${API}/user/dashboard`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      const data = await res.json();
+      setStatsUser(data);
+    } catch (_) {
+      setStatsUser(null);
+    } finally {
+      setStatsLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchDashboard();
-    const interval = setInterval(fetchDashboard, 10000);
+    fetchStats();
+    const interval = setInterval(fetchStats, 15000);
     return () => clearInterval(interval);
   }, [navigate]);
 
@@ -82,31 +101,15 @@ export default function Dashboard() {
   return (
     <div className="d-flex flex-column flex-md-row" style={{ minHeight: "100vh", backgroundColor: "#f5f7fb" }}>
       {sidebarOpen && <div className="sidebar-overlay active" onClick={() => setSidebarOpen(false)} />}
-
       <div className={`sidebar-container ${sidebarOpen ? 'open' : ''} d-md-block`}>
         <button className="sidebar-close-btn d-md-none" onClick={() => setSidebarOpen(false)}>
           <span className="fs-4">&times;</span>
         </button>
-
-<div className="text-center mb-4">
-  <img
-    src={LOGO}
-    alt="Logo"
-    className="img-fluid mb-3"
-    style={{ maxWidth: "100px" }}
-  />
-  <br />
-  <img
-    src=''
-    alt="Profile"
-    className="rounded-circle border shadow"
-    width="80"
-    height="80"
-    style={{ objectFit: "cover" }}
-  />
-</div>
-
-
+        <div className="text-center mb-4">
+          <img src={LOGO} alt="Logo" className="img-fluid mb-3" style={{ maxWidth: "100px" }} />
+          <br />
+          <img src='' alt="Profile" className="rounded-circle border shadow" width="80" height="80" style={{ objectFit: "cover" }} />
+        </div>
         <ul className="nav flex-column fw-semibold">
           <li className="nav-item mb-3">
             <Link to="/account" className="nav-link text-dark d-flex align-items-center" onClick={() => setSidebarOpen(false)}>
@@ -132,12 +135,12 @@ export default function Dashboard() {
       </div>
 
       <div className="flex-grow-1 position-relative z-0 d-flex flex-column">
-        <div className="p-3 p-md-4" style={{ backgroundColor: "#3e7bfa", color: "white" }}>
+        <div className="p-3 p-md-4" style={{ backgroundColor: "#3e7bfa", color: "white" ,height:'250px'}} >
           <div className="d-flex justify-content-between align-items-center gap-2 mb-2 flex-wrap">
             <button className="btn btn-outline-light d-md-none" onClick={() => setSidebarOpen(true)}>
               <Menu size={20} />
             </button>
-            <h5 className="fw-bold mb-0">My Dashboard</h5>
+            <h3 className="fw-bold mb-0 " style={{marginTop:'100px'}}>My Dashboard</h3>
             <div className="dropdown">
               <button className="btn btn-outline-light dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <span className="me-2 d-none d-sm-inline" style={{ fontFamily: "cursive", fontSize: "17px" }}>Williams Chandler</span>
@@ -153,37 +156,51 @@ export default function Dashboard() {
           </div>
         </div>
 
+     
         <div className="row g-3 g-md-4 p-3 p-md-4" style={{ backgroundColor: "#f0f4ff", color: "#333" }}>
-          {[{
-            label: "ACCOUNT BALANCE",
-            value: `$${user?.totalAmount?.toLocaleString() || "0.00"}`,
-            icon: <DollarSign size={18} color="white" />,
-            bg: "#EA5455",
-          }, {
-            label: "ACCOUNT TYPE",
-            value: user?.accountType || "N/A",
-            icon: <MonitorSmartphone size={18} color="white" />,
-            bg: "#FF9F43",
-          }, {
-            label: "TOTAL TRANSACTIONS",
-            value: user?.totalTransactions ?? 0,
-            icon: <RotateCcw size={18} color="white" />,
-            bg: "#28C76F",
-          }, {
-            label: "ACCOUNT NO.",
-            value: user?.accountNumber || "N/A",
-            icon: <CreditCard size={18} color="white" />,
-            bg: "#7367F0",
-          }].map((item, idx) => (
+          {(statsLoading || !statsUser ? Array.from({ length: 4 }) : [
+            {
+              label: "ACCOUNT BALANCE",
+              value: `$${statsUser?.totalAmount?.toLocaleString() || "0.00"}`,
+              icon: <DollarSign size={18} color="white" />,
+              bg: "#EA5455",
+            },
+            {
+              label: "ACCOUNT TYPE",
+              value: statsUser?.accountType || "N/A",
+              icon: <MonitorSmartphone size={18} color="white" />,
+              bg: "#FF9F43",
+            },
+            {
+              label: "TOTAL TRANSACTIONS",
+              value: statsUser?.totalTransactions ?? 0,
+              icon: <RotateCcw size={18} color="white" />,
+              bg: "#28C76F",
+            },
+            {
+              label: "ACCOUNT NO.",
+              value: statsUser?.accountNumber || "N/A",
+              icon: <CreditCard size={18} color="white" />,
+              bg: "#7367F0",
+            }
+          ]).map((item, idx) => (
             <div className="col-6 col-md-3" key={idx}>
               <div className="card text-center shadow-sm h-100">
-                <div className="card-body d-flex flex-column justify-content-center align-items-center gap-2">
-                  <div className="rounded-circle d-flex align-items-center justify-content-center mb-1" style={{ backgroundColor: item.bg, width: 35, height: 35 }}>
-                    {item.icon}
+                {statsLoading || !statsUser ? (
+                  <div className="card-body d-flex flex-column justify-content-center align-items-center gap-2">
+                    <div className="skeleton rounded-circle mb-2" style={{ width: 35, height: 35 }}></div>
+                    <div className="skeleton w-75 mb-2" style={{ height: 10 }}></div>
+                    <div className="skeleton w-50" style={{ height: 15 }}></div>
                   </div>
-                  <p className="text-muted small mb-1" style={{ fontSize: '17px' }}>{item.label}</p>
-                  <h6 className="text-dark mb-0">{item.value}</h6>
-                </div>
+                ) : (
+                  <div className="card-body d-flex flex-column justify-content-center align-items-center gap-2">
+                    <div className="rounded-circle d-flex align-items-center justify-content-center mb-1" style={{ backgroundColor: item.bg, width: 35, height: 35 }}>
+                      {item.icon}
+                    </div>
+                    <p className="text-muted small mb-1" style={{ fontSize: '17px' }}>{item.label}</p>
+                    <h6 className="text-dark mb-0">{item.value}</h6>
+                  </div>
+                )}
               </div>
             </div>
           ))}
