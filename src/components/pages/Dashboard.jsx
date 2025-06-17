@@ -160,7 +160,7 @@ export default function Dashboard() {
   </div>
   {!sidebarOpen && (
     <div className="mt-3 ps-3" style={{ animation: 'slideInLeft 0.5s ease-out' }}>
-      <h3 className="fw-bold mb-0 px-3 py-1 rounded text-white" style={{ backgroundColor: '#000', display: 'inline-block' }}>My Dashboard</h3>
+      <h3 className="fw-bold mb-0 px-3 py-1 rounded text-white" style={{ display: 'inline-block' }}>My Dashboard</h3>
     </div>
   )}
 </div>
