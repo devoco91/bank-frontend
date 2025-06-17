@@ -17,7 +17,7 @@ const ProfilePage = () => {
             <Card.Body className="p-4">
               <div className="text-center mb-4">
                 <img
-                  src={PROFILE}
+                  src=""
                   alt="Profile"
                   className="rounded-circle border border-3"
                   style={{ width: 120, height: 120, objectFit: 'cover' }}
